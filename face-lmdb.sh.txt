@@ -1,0 +1,58 @@
+#去掉.txt即可（前面的数字是行号）
+
+ 1  #!/usr/bin/env sh
+ 2  # Create the face_48 lmdb inputs
+ 3  # N.B. set the path to the face_48 train + val data dirs
+ 4   
+ 5   EXAMPLE=/home/changqing/caffe/faceDetect
+ 6   DATA=/home/changqing/caffe/faceDetect
+ 7   TOOLS=/home/changqing/caffe/build/tools
+ 8   
+ 9   TRAIN_DATA_ROOT=/home/changqing/caffe/faceDetect/trainData20000_20000/
+10  VAL_DATA_ROOT=/home/changqing/caffe/faceDetect/testData1600_1600/
+11  
+12  # Set RESIZE=true to resize the images to 60 x 60. Leave as false if images have
+13  # already been resized using another tool.
+14  RESIZE=true
+15  if $RESIZE; then
+16    RESIZE_HEIGHT=227
+17    RESIZE_WIDTH=227
+18  else
+19    RESIZE_HEIGHT=0
+20    RESIZE_WIDTH=0
+21  fi
+22  
+23  if [ ! -d "$TRAIN_DATA_ROOT" ]; then
+24   echo "Error: TRAIN_DATA_ROOT is not a path to a directory: $TRAIN_DATA_ROOT"
+25    echo "Set the TRAIN_DATA_ROOT variable in create_face_48.sh to the path" 26        "where the face_48 training data is stored."
+27    exit 1
+28  fi
+29  
+30  if [ ! -d "$VAL_DATA_ROOT" ]; then
+31    echo "Error: VAL_DATA_ROOT is not a path to a directory: $VAL_DATA_ROOT"
+32    echo "Set the VAL_DATA_ROOT variable in create_face_48.sh to the path" 33         "where the face_48 validation data is stored."
+34    exit 1
+35  fi
+36  
+37  echo "Creating train lmdb..."
+38  
+39  GLOG_logtostderr=1 $TOOLS/convert_imageset 
+40      --resize_height=$RESIZE_HEIGHT 
+41      --resize_width=$RESIZE_WIDTH 
+42      --shuffle 
+43      $TRAIN_DATA_ROOT 
+44      $DATA/train.txt 
+45      $EXAMPLE/face_train_lmdb
+46  
+47  echo "Creating val lmdb..."
+48  
+49  GLOG_logtostderr=1 $TOOLS/convert_imageset 
+50     --resize_height=$RESIZE_HEIGHT 
+51      --resize_width=$RESIZE_WIDTH 
+52      --shuffle 
+53      $VAL_DATA_ROOT 
+54      $DATA/test.txt 
+55      $EXAMPLE/face_test_lmdb
+56 
+57 echo "Done."
+58 Status API Training Shop Blog About
